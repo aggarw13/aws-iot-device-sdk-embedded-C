@@ -2,12 +2,10 @@
 APP_SRCDIR=.
 MQTT_SRCDIR=../mqtt
 SHADOW_SRCDIR=../shadow
-LOGGING_SRCDIR=../logging-stack
 
 SRCS+=$(wildcard $(APP_SRCDIR)/*.c)
 SRCS+=$(wildcard $(MQTT_SRCDIR)/*.c)
 SRCS+=$(wildcard $(SHADOW_SRCDIR)/*.c)
-SRCS+=$(wildcard $(LOGGING_SRCDIR)/*.c)
 
 INCLUDE_DIRS+=-I .
 INCLUDE_DIRS+=-I ../mqtt
@@ -15,7 +13,6 @@ INCLUDE_DIRS+=-I ../mqtt/private
 INCLUDE_DIRS+=-I ../shadow
 INCLUDE_DIRS+=-I ../shadow/private
 INCLUDE_DIRS+=-I ../logging-framework
-INCLUDE_DIRS+=-I ../logging-stack
 
 OBJS=$(SRCS:.c=.o)
 EXE = app_1
@@ -28,7 +25,7 @@ CFLAGS+=-std=c99 -Wall -O0 -ggdb -DENABLE_LOGGING
 build: $(EXE)
 
 clean:
-	rm -rf $(APP_SRCDIR)/*.o $(MQTT_SRCDIR)/*.o $(SHADOW_SRCDIR)/*.o $(LOGGING_SRCDIR)/*.o *~ $(EXE)
+	rm -rf $(APP_SRCDIR)/*.o $(MQTT_SRCDIR)/*.o $(SHADOW_SRCDIR)/*.o *~ $(EXE)
 
 .PHONY: build test clean
 

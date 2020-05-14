@@ -1,15 +1,10 @@
 #ifndef CONFIG_H__
 #define CONFIG_H__
 
-#include "logging.h"
+#include <stdio.h>
 
-/* Redirect logs to our logging function. */
-#define Log( messageLevel, pFormat, ... ) \
-    Log_Generic( "[%s:%d] [%s] "pFormat,  \
-                __FILE__,                 \
-                __LINE__,                 \
-                 LIBRARY_LOG_NAME,        \
-                 __VA_ARGS__ )
+/* Print out log using printf. */
+#define SdkLog( X )         printf X
 
 /* Log level for MQTT is debug - most verbose. */
 #define MQTT_LOG_LEVEL      LOG_DEBUG
