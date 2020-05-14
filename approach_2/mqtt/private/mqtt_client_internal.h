@@ -22,32 +22,16 @@
         #define LogError( message )
     #endif
 
-    #ifndef LogErrorWithArgs
-        #define LogErrorWithArgs( formatAndStrings, ... )
-    #endif
-
-    #ifndef LogWarn
+     #ifndef LogWarn
         #define LogWarn( message )
     #endif
 
-    #ifndef LogWarnWithArgs
-        #define LogWarnWithArgs( formatAndStrings, ... )
-    #endif
-
-    #ifndef LogInfo
+     #ifndef LogInfo
         #define LogInfo( message )
     #endif
 
-    #ifndef LogInfoWithArgs
-        #define LogInfoWithArgs( formatAndStrings, ... )
-    #endif
-
-    #ifndef LogDebug
+     #ifndef LogDebug
         #define LogDebug( message )
-    #endif
-
-    #ifndef LogDebugWithArgs
-        #define LogDebugWithArgs( formatAndStrings, ... )
     #endif
 
 #endif /* ENABLE_LOGGING */

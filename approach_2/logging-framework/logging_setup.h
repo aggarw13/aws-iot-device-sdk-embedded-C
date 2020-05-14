@@ -44,64 +44,46 @@
     #error "Please define LIBRARY_LOG_LEVEL as either LOG_NONE, LOG_ERROR, LOG_WARN, LOG_INFO, or LOG_DEBUG."
 #else
     #if LIBRARY_LOG_LEVEL != LOG_NONE
-        #if !defined( Log )
-            #error "Please define the common logging interface macro, Log(messageLevel, pFormat, ...)."
+        #if !defined( SdkLog )
+            #error "Please define the common logging interface macro, SdkLog."
         #endif
     #endif
 
     #if LIBRARY_LOG_LEVEL == LOG_DEBUG
         /* All log level messages will logged. */
-        #define LogError( message )                 Log( LOG_ERROR, "%s", message )
-        #define LogErrorWithArgs( pFormat, ... )    Log( LOG_ERROR, pFormat, __VA_ARGS__ )
-        #define LogWarn( message )                  Log( LOG_WARN, "%s", message )
-        #define LogWarnWithArgs( pFormat, ... )     Log( LOG_WARN, pFormat, __VA_ARGS__ )
-        #define LogInfo( message )                  Log( LOG_INFO, "%s", message )
-        #define LogInfoWithArgs( pFormat, ... )     Log( LOG_INFO, pFormat, __VA_ARGS__ )
-        #define LogDebug( message )                 Log( LOG_DEBUG, "%s", message )
-        #define LogDebugWithArgs( pFormat, ... )    Log( LOG_DEBUG, pFormat, __VA_ARGS__ )
+        #define LogError( message )                 SdkLog( ( "[ERROR]: [%s:%d]", __FILE__, __LINE__ ) ); SdkLog( message )
+        #define LogWarn( message )                  SdkLog( ( "[WARN]: [%s:%d]", __FILE__, __LINE__ ) ); SdkLog( message )
+        #define LogInfo( message )                  SdkLog( ( "[INFO]: [%s:%d]", __FILE__, __LINE__ ) ); SdkLog( message )
+        #define LogDebug( message )                 SdkLog( ( "[DEBUG]: [%s:%d]", __FILE__, __LINE__ ) ); SdkLog( message )
 
     #elif LIBRARY_LOG_LEVEL == LOG_INFO
         /* Only INFO, WARNING and ERROR messages will be logged. */
-        #define LogError( message )                 Log( LOG_ERROR, "%s", message )
-        #define LogErrorWithArgs( pFormat, ... )    Log( LOG_ERROR, pFormat, __VA_ARGS__ )
-        #define LogWarn( message )                  Log( LOG_WARN, "%s", message )
-        #define LogWarnWithArgs( pFormat, ... )     Log( LOG_WARN, pFormat, __VA_ARGS__ )
-        #define LogInfo( message )                  Log( LOG_INFO, "%s", message )
-        #define LogInfoWithArgs( pFormat, ... )     Log( LOG_INFO, pFormat, __VA_ARGS__ )
+        #define LogError( message )                 SdkLog( ( "[ERROR]: [%s:%d]", __FILE__, __LINE__ ) ); SdkLog( message )
+        #define LogWarn( message )                  SdkLog( ( "[WARN]: [%s:%d]", __FILE__, __LINE__ ) ); SdkLog( message )
+        #define LogInfo( message )                  SdkLog( ( "[INFO]: [%s:%d]", __FILE__, __LINE__ ) ); SdkLog( message )
         #define LogDebug( message )
-        #define LogDebugWithArgs( pFormat, ... )
 
     #elif LIBRARY_LOG_LEVEL == LOG_WARN
         /* Only WARNING and ERROR messages will be logged.*/
-        #define LogError( message )                 Log( LOG_ERROR, "%s", message )
-        #define LogErrorWithArgs( pFormat, ... )    Log( LOG_ERROR, pFormat, __VA_ARGS__ )
-        #define LogWarn( message )                  Log( LOG_WARN, "%s", message )
-        #define LogWarnWithArgs( pFormat, ... )     Log( LOG_WARN, pFormat, __VA_ARGS__ )
+        #define LogError( message )                 SdkLog( ( "[ERROR]: [%s:%d]", __FILE__, __LINE__ ) ); SdkLog( message )
+        #define LogWarn( message )                  SdkLog( ( "[WARN]: [%s:%d]", __FILE__, __LINE__ ) ); SdkLog( message )
         #define LogInfo( message )
-        #define LogInfoWithArgs( pFormat, ... )
         #define LogDebug( message )
-        #define LogDebugWithArgs( pFormat, ... )
 
     #elif LIBRARY_LOG_LEVEL == LOG_ERROR
         /* Only ERROR messages will be logged. */
-        #define LogError( message )                 Log( LOG_ERROR, "%s", message )
-        #define LogErrorWithArgs( pFormat, ... )    Log( LOG_ERROR, pFormat, __VA_ARGS__ )
+        #define LogError( message )                 SdkLog( ( "[ERROR]: [%s:%d]", __FILE__, __LINE__ ) ); SdkLog( message )
         #define LogWarn( message )
-        #define LogWarnWithArgs( pFormat, ... )
         #define LogInfo( message )
-        #define LogInfoWithArgs( pFormat, ... )
         #define LogDebug( message )
-        #define LogDebugWithArgs( pFormat, ... )
 
     #else /* if LIBRARY_LOG_LEVEL == LOG_ERROR */
+
         #define LogError( message )
-        #define LogErrorWithArgs( pFormat, ... )
         #define LogWarn( message )
-        #define LogWarnWithArgs( pFormat, ... )
         #define LogInfo( message )
-        #define LogInfoWithArgs( pFormat, ... )
         #define LogDebug( message )
-        #define LogDebugWithArgs( pFormat, ... )
+
     #endif /* if LIBRARY_LOG_LEVEL == LOG_ERROR */
 #endif /* if !defined( LIBRARY_LOG_LEVEL ) || ( ( LIBRARY_LOG_LEVEL != LOG_NONE ) && ( LIBRARY_LOG_LEVEL != LOG_ERROR ) && ( LIBRARY_LOG_LEVEL != LOG_WARN ) && ( LIBRARY_LOG_LEVEL != LOG_INFO ) && ( LIBRARY_LOG_LEVEL != LOG_DEBUG ) ) */
 
