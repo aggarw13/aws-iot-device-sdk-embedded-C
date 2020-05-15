@@ -48,6 +48,8 @@
     ( LIBRARY_LOG_LEVEL != LOG_INFO ) &&   \
     ( LIBRARY_LOG_LEVEL != LOG_DEBUG ) )
     #error "Please define LIBRARY_LOG_LEVEL as either LOG_NONE, LOG_ERROR, LOG_WARN, LOG_INFO, or LOG_DEBUG."
+#elif !defined( LIBRARY_LOG_NAME )
+    #error "Please define LIBRARY_LOG_NAME for the library."
 #else
     #if LIBRARY_LOG_LEVEL == LOG_DEBUG
         /* All log level messages will logged. */
