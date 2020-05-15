@@ -34,6 +34,10 @@
 /* Standard Include. */
 #include <stdio.h>
 
+/* Metadata information to prepend to every log message. */
+#define LOG_METADATA_FORMAT_ARGS    ( "[%s:%d]", __FILE__, __LINE__ )
+
+/* Common macro for all logging interface macros. */
 #define SdkLog( string )    printf string
 
 /* Check that LIBRARY_LOG_LEVEL is defined and has a valid value. */
@@ -45,36 +49,30 @@
     ( LIBRARY_LOG_LEVEL != LOG_DEBUG ) )
     #error "Please define LIBRARY_LOG_LEVEL as either LOG_NONE, LOG_ERROR, LOG_WARN, LOG_INFO, or LOG_DEBUG."
 #else
-    #if LIBRARY_LOG_LEVEL != LOG_NONE
-        #if !defined( SdkLog )
-            #error "Please define the common logging interface macro, SdkLog."
-        #endif
-    #endif
-
     #if LIBRARY_LOG_LEVEL == LOG_DEBUG
         /* All log level messages will logged. */
-        #define LogError( message )    SdkLog( ( "[ERROR]: [%s] [%s:%d]", LIBRARY_LOG_NAME, __FILE__, __LINE__ ) ); SdkLog( message )
-        #define LogWarn( message )     SdkLog( ( "[WARN]: [%s] [%s:%d]", LIBRARY_LOG_NAME, __FILE__, __LINE__ ) ); SdkLog( message )
-        #define LogInfo( message )     SdkLog( ( "[INFO]: [%s] [%s:%d]", LIBRARY_LOG_NAME, __FILE__, __LINE__ ) ); SdkLog( message )
-        #define LogDebug( message )    SdkLog( ( "[DEBUG]: [%s] [%s:%d]", LIBRARY_LOG_NAME, __FILE__, __LINE__ ) ); SdkLog( message )
+        #define LogError( message )    SdkLog( ( "[ERROR]: [%s] ", LIBRARY_LOG_NAME ) ); SdkLog( LOG_METADATA_FORMAT_ARGS ); SdkLog( message )
+        #define LogWarn( message )     SdkLog( ( "[WARN]: [%s] ", LIBRARY_LOG_NAME ) ); SdkLog( LOG_METADATA_FORMAT_ARGS ); SdkLog( message )
+        #define LogInfo( message )     SdkLog( ( "[INFO]: [%s] ", LIBRARY_LOG_NAME ) ); SdkLog( LOG_METADATA_FORMAT_ARGS ); SdkLog( message )
+        #define LogDebug( message )    SdkLog( ( "[DEBUG]: [%s] ", LIBRARY_LOG_NAME ) ); SdkLog( LOG_METADATA_FORMAT_ARGS ); SdkLog( message )
 
     #elif LIBRARY_LOG_LEVEL == LOG_INFO
         /* Only INFO, WARNING and ERROR messages will be logged. */
-        #define LogError( message )    SdkLog( ( "[ERROR]: [%s] [%s:%d]", LIBRARY_LOG_NAME, __FILE__, __LINE__ ) ); SdkLog( message )
-        #define LogWarn( message )     SdkLog( ( "[WARN]: [%s] [%s:%d]", LIBRARY_LOG_NAME, __FILE__, __LINE__ ) ); SdkLog( message )
-        #define LogInfo( message )     SdkLog( ( "[INFO]: [%s] [%s:%d]", LIBRARY_LOG_NAME, __FILE__, __LINE__ ) ); SdkLog( message )
+        #define LogError( message )    SdkLog( ( "[ERROR]: [%s] ", LIBRARY_LOG_NAME ) ); SdkLog( LOG_METADATA_FORMAT_ARGS ); SdkLog( message )
+        #define LogWarn( message )     SdkLog( ( "[WARN]: [%s] ", LIBRARY_LOG_NAME ) ); SdkLog( LOG_METADATA_FORMAT_ARGS ); SdkLog( message )
+        #define LogInfo( message )     SdkLog( ( "[INFO]: [%s] ", LIBRARY_LOG_NAME ) ); SdkLog( LOG_METADATA_FORMAT_ARGS ); SdkLog( message )
         #define LogDebug( message )
 
     #elif LIBRARY_LOG_LEVEL == LOG_WARN
         /* Only WARNING and ERROR messages will be logged.*/
-        #define LogError( message )    SdkLog( ( "[ERROR]: [%s] [%s:%d]", LIBRARY_LOG_NAME, __FILE__, __LINE__ ) ); SdkLog( message )
-        #define LogWarn( message )     SdkLog( ( "[WARN]: [%s] [%s:%d]", LIBRARY_LOG_NAME, __FILE__, __LINE__ ) ); SdkLog( message )
+        #define LogError( message )    SdkLog( ( "[ERROR]: [%s] ", LIBRARY_LOG_NAME ) ); SdkLog( LOG_METADATA_FORMAT_ARGS ); SdkLog( message )
+        #define LogWarn( message )     SdkLog( ( "[WARN]: [%s] ", LIBRARY_LOG_NAME ) ); SdkLog( LOG_METADATA_FORMAT_ARGS ); SdkLog( message )
         #define LogInfo( message )
         #define LogDebug( message )
 
     #elif LIBRARY_LOG_LEVEL == LOG_ERROR
         /* Only ERROR messages will be logged. */
-        #define LogError( message )    SdkLog( ( "[ERROR]: [%s] [%s:%d]", LIBRARY_LOG_NAME, __FILE__, __LINE__ ) ); SdkLog( message )
+        #define LogError( message )    SdkLog( ( "[ERROR]: [%s] ", LIBRARY_LOG_NAME ) ); SdkLog( LOG_METADATA_FORMAT_ARGS ); SdkLog( message )
         #define LogWarn( message )
         #define LogInfo( message )
         #define LogDebug( message )
