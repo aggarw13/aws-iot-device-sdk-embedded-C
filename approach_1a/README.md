@@ -6,4 +6,4 @@ Each of the apps only calls the `MQTT_PublishMessage` and `Shadow_Get` function,
 * Debug for MQTT
 * Warning for Shadow
 
-`gcc -I app_1 -I logging-framework -I mqtt -I mqtt/private -I shadow -I shadow/private app_1/main.c mqtt/mqtt_client.c shadow/shadow_client.c -o build_1`
+`gcc -I app_1 -I logging-stack -I mqtt -I mqtt/private -I shadow -I shadow/private app_1/main.c mqtt/mqtt_client.c shadow/shadow_client.c -o build_1`
