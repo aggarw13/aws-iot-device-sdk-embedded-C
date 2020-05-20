@@ -24,9 +24,6 @@
  * @brief Implementation of the functions in iot_clock.h for POSIX systems.
  */
 
-/* The config header is always included first. */
-#include "config.h"
-
 /* Standard includes. */
 #include <stdlib.h>
 
@@ -39,20 +36,6 @@
 
 /* Platform clock include. */
 #include "clock.h"
-
-/* Configure logs for the functions in this file. */
-#ifdef LOG_LEVEL_PLATFORM
-    #define LIBRARY_LOG_LEVEL        LOG_LEVEL_PLATFORM
-#else
-    #ifdef LOG_LEVEL_GLOBAL
-        #define LIBRARY_LOG_LEVEL    LOG_LEVEL_GLOBAL
-    #else
-        #define LIBRARY_LOG_LEVEL    LOG_NONE
-    #endif
-#endif
-
-#define LIBRARY_LOG_NAME    ( "CLOCK" )
-#include "logging_setup.h"
 
 /*-----------------------------------------------------------*/
 
