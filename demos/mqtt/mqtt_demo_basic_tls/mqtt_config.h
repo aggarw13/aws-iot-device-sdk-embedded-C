@@ -22,30 +22,29 @@
 #ifndef MQTT_CONFIG_H_
 #define MQTT_CONFIG_H_
 
+
 /**************************************************/
 /******* DO NOT CHANGE the following order ********/
 /**************************************************/
 
 /* Logging related header files are required to be included in the following order:
- * 1. Include the header file "logging_levels.h".
- * 2. Define LIBRARY_LOG_NAME and  LIBRARY_LOG_LEVEL.
- * 3. Include the header file "logging_stack.h".
+ * 1. Include the logging config file "logging_levels.h".
+ * 2. Define LIBRARY_LOG_NAME and  LIBRARY_LOG_LEVEL based on
+ * configured logging for MQTT.
+ * 3. Include the header file "logging_stack.h", if logging is enabled for MQTT.
  */
+#include "logging_config.h"
 
-/* Include header that defines log levels. */
-#include "logging_levels.h"
-
+#ifdef MQTT_LOG_LEVEL
 /* Configure name and log level for the MQTT library. */
-#define LIBRARY_LOG_NAME     "MQTT"
-#define LIBRARY_LOG_LEVEL    LOG_INFO
+    #define LIBRARY_LOG_NAME     "MQTT"
+    #define LIBRARY_LOG_LEVEL    MQTT_LOG_LEVEL
 
-#include "logging_stack.h"
+    #include "logging_stack.h"
+
+#endif /* ifdef MQTT_LOG_LEVEL */
 
 /************ End of logging configuration ****************/
-
-/* Set network context to OpenSSL SSL context. */
-#include <openssl/ssl.h>
-typedef SSL * MQTTNetworkContext_t;
 
 /**
  * @brief The maximum number of MQTT PUBLISH messages that may be pending

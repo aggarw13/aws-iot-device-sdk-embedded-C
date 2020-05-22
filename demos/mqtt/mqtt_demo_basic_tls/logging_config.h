@@ -19,36 +19,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef DEMO_CONFIG_H
-#define DEMO_CONFIG_H
+#ifndef LOGGING_CONFIG_H_
+#define LOGGING_CONFIG_H_
 
-/**************************************************/
-/******* DO NOT CHANGE the following order ********/
-/**************************************************/
+/* Include header for logging levels. */
+#include "logging_levels.h"
 
-/* Logging related header files are required to be included in the following order:
- * 1. Include the logging config file "logging_levels.h".
- * 2. Define LIBRARY_LOG_NAME and  LIBRARY_LOG_LEVEL based on
- * configured logging for DEMO.
- * 3. Include the header file "logging_stack.h", if logging is enabled for DEMO.
- */
-#include "logging_config.h"
+#define MQTT_LOG_LEVEL    LOG_INFO
+#define DEMO_LOG_LEVEL    LOG_INFO
 
-#ifdef DEMO_LOG_LEVEL
-/* Logging configuration for the Demo. */
-    #define LIBRARY_LOG_NAME     "DEMO"
-    #define LIBRARY_LOG_LEVEL    DEMO_LOG_LEVEL
-
-    #include "logging_stack.h"
-#endif
-
-/************ End of logging configuration ****************/
-
-/**
- * @brief MQTT client identifier.
- *
- * No two clients may use the same client identifier simultaneously.
- */
-#define CLIENT_IDENTIFIER    "testclient"
-
-#endif /* ifndef DEMO_CONFIG_H */
+#endif LOGGING_CONFIG_H_
