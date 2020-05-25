@@ -68,6 +68,8 @@ typedef struct message
     uint8_t numOfBytes;
 } message;
 
+static uint8_t receivedSignal = 0u;
+
 /*-----------------------------------------------------------*/
 
 static bool _reallocLoggingBuffer( void ** pOldBuffer,
@@ -99,10 +101,7 @@ static bool _reallocLoggingBuffer( void ** pOldBuffer,
 
 void sig_handler( int signo )
 {
-    if( signo == SIGINT )
-    {
-        pthread_exit( NULL );
-    }
+    receivedSignal = 1u;
 }
 
 
@@ -133,6 +132,12 @@ void loggingService( void * arg )
 
     for( ; ; )
     {
+        if( receivedSignal == 1u )
+        {
+            mq_close( logging_qd );
+            break;
+        }
+
         /* Dequeue log message string. */
         if( mq_receive( logging_qd, &recvMessage, MAX_MSG_SIZE, NULL ) == -1 )
         {
@@ -157,6 +162,7 @@ void terminateLogging()
 {
     pthread_kill( loggingThread, SIGINT );
     pthread_join( loggingThread, NULL );
+    /*pthread_cancel( loggingThread ); */
 }
 
 void sdkLogGeneric( const char * const pFormat,
