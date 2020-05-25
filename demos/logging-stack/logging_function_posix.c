@@ -31,6 +31,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <mqueue.h>
+#include <pthread.h>
+#include <signal.h>
 
 /* Platform clock include. */
 #include "clock.h"
@@ -50,6 +53,20 @@
  * to accommodate the vast majority of timestrings.
  */
 #define MAX_TIMESTRING_LENGTH    ( 64 )
+
+#define LOGGING_QUEUE_NAME       "/logging-queue1"
+#define QUEUE_PERMISSIONS        0660
+#define MAX_MESSAGES             10
+#define MAX_MSG_SIZE             256
+#define MSG_BUFFER_SIZE          MAX_MSG_SIZE + 10
+
+static pthread_t loggingThread;
+
+typedef struct message
+{
+    char logBuffer[ MAX_MSG_SIZE - 1 ];
+    uint8_t numOfBytes;
+} message;
 
 /*-----------------------------------------------------------*/
 
@@ -78,84 +95,106 @@ static bool _reallocLoggingBuffer( void ** pOldBuffer,
     return status;
 }
 
-/* static void commonSdkLog( uint8_t addTimestamp, */
-/*                           const char * pFormat, */
-/*                           va_list args ) */
-/* { */
-/* } */
-
 /*-----------------------------------------------------------*/
+
+void sig_handler( int signo )
+{
+    if( signo == SIGINT )
+    {
+        pthread_exit( NULL );
+    }
+}
+
+
+void loggingService( void * arg )
+{
+    mqd_t logging_qd; /* queue descriptors */
+    struct mq_attr attr;
+    message recvMessage;
+
+    attr.mq_flags = 0;
+    attr.mq_maxmsg = MAX_MESSAGES;
+    attr.mq_msgsize = MAX_MSG_SIZE;
+    attr.mq_curmsgs = 0;
+
+    logging_qd = mq_open( LOGGING_QUEUE_NAME, O_RDONLY | O_CREAT, QUEUE_PERMISSIONS, &attr );
+    printf( "Testing print from thread\n" );
+
+    if( logging_qd == -1 )
+    {
+        printf( "ERROR in logging service: Queue creation failed.\n" );
+    }
+
+    /* Register signal handler for thread termination. */
+    if( signal( SIGINT, sig_handler ) == SIG_ERR )
+    {
+        printf( "ERROR in logging service: Failed to register signal handler.\n" );
+    }
+
+    for( ; ; )
+    {
+        /* Dequeue log message string. */
+        if( mq_receive( logging_qd, &recvMessage, MAX_MSG_SIZE, NULL ) == -1 )
+        {
+            printf( "ERROR in logging service: Failed to read from queue!\n" );
+        }
+        else
+        {
+            recvMessage.logBuffer[ recvMessage.numOfBytes ] = '\0';
+
+            printf( "%s", recvMessage.logBuffer );
+        }
+    }
+}
+
+
+void initializeLogging()
+{
+    pthread_create( &loggingThread, NULL, loggingService, NULL );
+}
+
+void terminateLogging()
+{
+    pthread_kill( loggingThread, SIGINT );
+    pthread_join( loggingThread, NULL );
+}
 
 void sdkLogGeneric( const char * const pFormat,
                     ... )
 {
     int requiredMessageSize = 0;
-    size_t bufferSize = 0,
-           bufferPosition = 0, timestringLength = 0;
-    char * pLoggingBuffer = NULL;
+    message messageInfo;
     va_list args;
-
-    /* Add 64 as an initial (arbitrary) guess for the length of the message. */
-    bufferSize += 64;
-
-    /* Allocate memory for the logging buffer. */
-    pLoggingBuffer = ( char * ) malloc( bufferSize );
-
-    if( pLoggingBuffer == NULL )
-    {
-        return;
-    }
 
     va_start( args, pFormat );
 
     /* Add the log message to the logging buffer. */
-    requiredMessageSize = vsnprintf( pLoggingBuffer + bufferPosition,
-                                     bufferSize - bufferPosition,
+    requiredMessageSize = vsnprintf( messageInfo.logBuffer,
+                                     sizeof( messageInfo.logBuffer ),
                                      pFormat,
                                      args );
 
-    va_end( args );
-
-    /* If the logging buffer was too small to fit the log message, reallocate
-     * a larger logging buffer. */
-    if( ( size_t ) requiredMessageSize >= bufferSize - bufferPosition )
+    if( requiredMessageSize < sizeof( messageInfo.logBuffer ) )
     {
-        if( _reallocLoggingBuffer( ( void ** ) &pLoggingBuffer,
-                                   ( size_t ) requiredMessageSize + bufferPosition + 1,
-                                   bufferSize ) == false )
-        {
-            /* If buffer reallocation failed, return. */
-            free( pLoggingBuffer );
+        messageInfo.numOfBytes = requiredMessageSize;
 
-            return;
+        va_end( args );
+
+        mqd_t logging_qd; /* queue descriptors */
+
+        logging_qd = mq_open( LOGGING_QUEUE_NAME, O_WRONLY );
+
+        if( logging_qd == -1 )
+        {
+            printf( "ERROR in logging: queue cannot be created\n" );
         }
 
-        /* Reallocation successful, update buffer size. */
-        bufferSize = ( size_t ) requiredMessageSize + bufferPosition + 1;
-
-        /* Add the log message to the buffer. Now that the buffer has been
-         * reallocated, this should succeed. */
-        va_start( args, pFormat );
-        requiredMessageSize = vsnprintf( pLoggingBuffer + bufferPosition,
-                                         bufferSize - bufferPosition,
-                                         pFormat,
-                                         args );
-        va_end( args );
+        /* Enqueue the buffer. */
+        if( mq_send( logging_qd, &messageInfo, MAX_MSG_SIZE, 0 ) == -1 )
+        {
+            printf( "ERROR in logging: Logging buffer cannot be queued!\n" );
+        }
     }
-
-    /* Check for encoding errors. */
-    if( requiredMessageSize <= 0 )
-    {
-        free( pLoggingBuffer );
-
-        return;
-    }
-
-    /* Print the logging buffer to stdout. */
-    puts( pLoggingBuffer );
-
-    /* Free the logging buffer. */
-    free( pLoggingBuffer );
 }
 
 void sdkLogGenericWithTimestring( const char * const pFormat,

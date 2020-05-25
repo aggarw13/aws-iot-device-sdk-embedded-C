@@ -29,11 +29,13 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+/* Demo Config header. */
+#include "demo_config.h"
+
 /* MQTT API header. */
 #include "mqtt.h"
 
-/* Demo Config header. */
-#include "demo_config.h"
+#include "logging_function.h"
 
 /**
  * @brief MQTT server host name.
@@ -410,6 +412,10 @@ int main( int argc,
     MQTTContext_t context;
     SSL * pSslContext = NULL;
 
+    initializeLogging();
+
+    LogInfo( ( "Starting demo." ) );
+
     /* Establish TCP connection and MQTT session. */
     int tcpSocket = connectToServer( SERVER, PORT );
 
@@ -432,6 +438,8 @@ int main( int argc,
             status = EXIT_FAILURE;
         }
     }
+
+    LogError( ( "Checkpoint 1." ) );
 
     /* Establish MQTT session on top of TCP+TLS connection. */
     if( status == EXIT_SUCCESS )
@@ -459,6 +467,8 @@ int main( int argc,
         }
     }
 
+    LogError( ( "Checkpoint 2." ) );
+
     /* Close TLS session if established. */
     if( pSslContext != NULL )
     {
@@ -478,6 +488,10 @@ int main( int argc,
         shutdown( tcpSocket, SHUT_RDWR );
         close( tcpSocket );
     }
+
+    LogInfo( ( "Ending demo." ) );
+
+    terminateLogging();
 
     return status;
 }

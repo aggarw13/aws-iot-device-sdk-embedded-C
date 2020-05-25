@@ -67,6 +67,8 @@ create_real_library(${real_name}
 list(APPEND utest_link_list
             lib${real_name}.a
             -l${mock_name}
+            -lpthread
+            -lrt
         )
 
 list(APPEND utest_dep_list

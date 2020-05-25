@@ -282,6 +282,8 @@ void setUp( void )
 
     /* Ignore the calls to http_errno_description. */
     http_errno_description_IgnoreAndReturn( "Mocked HTTP Parser Status" );
+
+    initializeLogging();
 }
 
 /* called before each testcase */
@@ -308,6 +310,17 @@ void tearDown( void )
     expectedValCbRetVal = 0;
     valueLenToReturn = 0u;
     invokeHeaderCompleteCallback = 0u;
+    terminateLogging();
+}
+
+void suiteSetUp( void )
+{
+    /*initializeLogging(); */
+}
+
+int suiteTearDown( int num_failures )
+{
+    ( void ) num_failures;
 }
 
 /* ============== Testing HTTPClient_InitializeRequestHeaders =============== */

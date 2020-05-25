@@ -17,7 +17,11 @@ target_link_libraries(
         mqtt
         OpenSSL::Crypto
         OpenSSL::SSL
+        logging
 )
+
+#set_target_properties( ${DEMO_NAME} PROPERTIES
+#            LINK_FLAGS "-lrt -lpthread" )
 
 target_include_directories(
     mqtt

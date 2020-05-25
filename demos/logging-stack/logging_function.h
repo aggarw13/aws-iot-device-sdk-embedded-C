@@ -45,7 +45,7 @@
  * @return No return value. On errors, it prints nothing.
  */
 /* @[declare_logging_generic] */
-void SdkLogGeneric( const char * const pFormat,
+void sdkLogGeneric( const char * const pFormat,
                     ... );
 
 /**
@@ -62,6 +62,10 @@ void SdkLogGeneric( const char * const pFormat,
 void SdkLogGenericWithTimestring( const char * const pFormat,
                                   ... );
 /* @[declare_logging_generic] */
+
+void initializeLogging();
+
+void terminateLogging();
 
 
 #endif /* ifndef IOT_LOGGING_H_ */
