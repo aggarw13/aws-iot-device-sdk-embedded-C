@@ -5,3 +5,8 @@ set( LOGGING_INCLUDE_DIRS
 set( LOGGING_SOURCES
      ${CMAKE_CURRENT_LIST_DIR}/clock_posix.c 
      ${CMAKE_CURRENT_LIST_DIR}/logging_function_posix.c )
+
+add_library( logging ${LOGGING_SOURCES} )
+
+target_include_directories( logging PUBLIC
+                              ${LOGGING_INCLUDE_DIRS} )
