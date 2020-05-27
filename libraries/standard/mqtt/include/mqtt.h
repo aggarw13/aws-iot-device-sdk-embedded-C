@@ -22,7 +22,6 @@
 #ifndef MQTT_H
 #define MQTT_H
 
-#include "network_config.h"
 #include "mqtt_config.h"
 #include "mqtt_lightweight.h"
 

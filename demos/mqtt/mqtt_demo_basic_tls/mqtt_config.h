@@ -22,6 +22,8 @@
 #ifndef MQTT_CONFIG_H_
 #define MQTT_CONFIG_H_
 
+/* Include header that provides transport interface definitions. */
+#include "network_config.h"
 
 /**************************************************/
 /******* DO NOT CHANGE the following order ********/

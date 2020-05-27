@@ -22,6 +22,9 @@
 #ifndef DEMO_CONFIG_H
 #define DEMO_CONFIG_H
 
+/* Include header that provides transport interface definitions. */
+#include "network_config.h"
+
 /**************************************************/
 /******* DO NOT CHANGE the following order ********/
 /**************************************************/

@@ -34,8 +34,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-/* Include configuration files. */
-#include "network_config.h"
+/* Include configuration file. */
 #include "mqtt_config.h"
 
 /* MQTT packet types. */
