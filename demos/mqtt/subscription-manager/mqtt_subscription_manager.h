@@ -73,9 +73,8 @@ typedef enum SubscriptionManagerStatus
      * @brief Failure return value due to an already existing record in the
      * registry for a new callback registration's requested topic filter.
      */
-    SUBSCRIPTION_MANAGER_RECORD_EXISTS = 3
+    SUBSCRIPTION_MANAGER_CALLBACK_EXISTS = 3
 } SubscriptionManagerStatus_t;
-
 
 /**
  * @brief Callback type to be registered for a topic filter with the subscription manager.
@@ -88,6 +87,22 @@ typedef enum SubscriptionManagerStatus
  */
 typedef void (* SubscriptionManagerCallback_t )( MQTTContext_t * pContext,
                                                  MQTTPublishInfo_t * pPublishInfo );
+
+/**
+ * @brief Matches a topic name (from a incoming PUBLISH) with a topic filter.
+ *
+ * @param[in] pTopicName The topic name to check.
+ * @param[in] topicNameLength Length of the topic name.
+ * @param[in] pTopicFilter The topic filter to check.
+ * @param[in] topicFilterLength Length of topic filter.
+ *
+ * @return `true` if the topic name and topic filter match; `false`
+ * otherwise.
+ */
+bool SubscriptionManager_MatchTopic( const char * pTopicName,
+                                     const uint16_t topicNameLength,
+                                     const char * pTopicFilter,
+                                     const uint16_t topicFilterLength );
 
 /**
  * @brief Dispatches the incoming PUBLISH message to the callbacks that have their
@@ -124,9 +139,7 @@ void SubscriptionManager_DispatchHandler( MQTTContext_t * pContext,
  * - #SUBSCRIPTION_MANAGER_RECORD_EXISTS, if a registered callback already exists for
  * the requested topic filter in the subscription manager.
  */
-SubscriptionManagerStatus_t SubscriptionManager_RegisterCallback( const char * pTopicFilter,
-                                                                  uint16_t topicFilterLength,
-                                                                  SubscriptionManagerCallback_t pCallback );
+SubscriptionManagerStatus_t SubscriptionManager_RegisterCallback( SubscriptionManagerCallback_t pCallback );
 
 /**
  * @brief Utility to remove the callback registered for a topic filter from the
@@ -135,8 +148,7 @@ SubscriptionManagerStatus_t SubscriptionManager_RegisterCallback( const char * p
  * @param[in] pTopicFilter The topic filter to remove from the subscription manager.
  * @param[in] topicFilterLength The length of the topic filter string.
  */
-void SubscriptionManager_RemoveCallback( const char * pTopicFilter,
-                                         uint16_t topicFilterLength );
+void SubscriptionManager_RemoveCallback( SubscriptionManagerCallback_t pCallback );
 
 
 #endif /* ifndef MQTT_SUBSCRIPTION_MANAGER_H_ */
