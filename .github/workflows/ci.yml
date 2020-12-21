@@ -193,10 +193,10 @@ jobs:
         run: |
           echo $GITHUB_REF
           if [[ "$GITHUB_REF" == "refs/head/main" ]]; then
-            python3 tools/doxygen/generate_docs.py --root .
-          else
             echo 'Generate ZIP artifact of doxygen output'
             python3 tools/doxygen/generate_docs.py --root . --zip
+          else
+            python3 tools/doxygen/generate_docs.py --root .
           fi
       - name: Upload doxygen artifact if main branch
         if: success() && github.ref == 'refs/heads/main'
