@@ -1133,93 +1133,34 @@ static void disconnect( void )
 static OtaMessageType_t getOtaMessageType( const char * pTopicFilter,
                                            uint16_t topicFilterLength )
 {
-    int retStatus = EXIT_FAILURE;
+    bool isMatch = false;
+    MqttStatus_t mqttStatus = MQTTSuccess;
 
-    uint16_t stringIndex = 0U, fieldLength = 0U, i = 0U;
+    uint16_t index = 0U;
     OtaMessageType_t retMesageType = OtaNumOfMessageType;
 
     /* Lookup table for OTA message string. */
-    static const char * const pOtaMessageStrings[ OtaNumOfMessageType ] =
+    static const char * const pWildCardTopicFilters[ OtaNumOfMessageType ] =
     {
-        OTA_TOPIC_JOBS,
-        OTA_TOPIC_STREAM
+        OTA_TOPIC_PREFIX "/+/" OTA_TOPIC_JOBS "/#",
+        OTA_TOPIC_PREFIX "/+/" OTA_TOPIC_STREAM "/#",
     };
 
-    /* Check topic prefix is valid.*/
-    if( strncmp( pTopicFilter, OTA_TOPIC_PREFIX, ( size_t ) OTA_TOPIC_PREFIX_LENGTH ) == 0 )
+    /* Match the input topic filter against the wild-card pattern of topics filters
+    * relevant for the OTA Update service to determine the type of topic filter. */
+    for( ; index < OtaNumOfMessageType; index++ )
     {
-        stringIndex = OTA_TOPIC_PREFIX_LENGTH;
+        mqttStatus = MQTT_MatchTopic( pTopicFilter,
+                                      topicFilterLength,
+                                      pWildCardTopicFilters[ index ],
+                                      strlen( pWildCardTopicFilters[ index ] ),
+                                      &isMatch );
+        assert( mqttStatus == MQTTSuccess );
 
-        retStatus = EXIT_SUCCESS;
-    }
-
-    /* Check if thing name is valid.*/
-    if( retStatus == EXIT_SUCCESS )
-    {
-        retStatus = EXIT_FAILURE;
-
-        /* Extract the thing name.*/
-        for( ; stringIndex < topicFilterLength; stringIndex++ )
+        if( isMatch )
         {
-            if( pTopicFilter[ stringIndex ] == ( char ) '/' )
-            {
-                break;
-            }
-            else
-            {
-                fieldLength++;
-            }
-        }
-
-        if( fieldLength > 0 )
-        {
-            /* Check thing name.*/
-            if( strncmp( &pTopicFilter[ stringIndex - fieldLength ],
-                         CLIENT_IDENTIFIER,
-                         ( size_t ) ( fieldLength ) ) == 0 )
-            {
-                stringIndex++;
-
-                retStatus = EXIT_SUCCESS;
-            }
-        }
-    }
-
-    /* Check the message type from topic.*/
-    if( retStatus == EXIT_SUCCESS )
-    {
-        fieldLength = 0;
-
-        /* Extract the topic type.*/
-        for( ; stringIndex < topicFilterLength; stringIndex++ )
-        {
-            if( pTopicFilter[ stringIndex ] == ( char ) '/' )
-            {
-                break;
-            }
-            else
-            {
-                fieldLength++;
-            }
-        }
-
-        if( fieldLength > 0 )
-        {
-            for( i = 0; i < OtaNumOfMessageType; i++ )
-            {
-                /* check thing name.*/
-                if( strncmp( &pTopicFilter[ stringIndex - fieldLength ],
-                             pOtaMessageStrings[ i ],
-                             ( size_t ) ( fieldLength ) ) == 0 )
-                {
-                    break;
-                }
-            }
-
-            if( i < OtaNumOfMessageType )
-            {
-                retMesageType = i;
-            }
+            retMesageType = index;
+            break;
         }
     }
 
